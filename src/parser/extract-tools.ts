@@ -193,7 +193,6 @@ export function mapOpenApiSchemaToJsonSchema(
   if (schema.type === 'string' && schema.enum?.length) {
     delete (jsonSchema as any).properties;
     delete (jsonSchema as any).required;
-    console.log({ schema, jsonSchema })
   }
 
   // Handle nullable properties by adding null to the type
@@ -224,16 +223,10 @@ export function mapOpenApiSchemaToJsonSchema(
   }
 
   // Recursively process array items
-  if (
-    jsonSchema.type === 'array' &&
-    jsonSchema.items !== null
-  ) {
-    if (jsonSchema.items?.type === 'string')
-      console.log({ type: jsonSchema.type, items: jsonSchema.items })
+  if (jsonSchema.type === 'array' && jsonSchema.items !== null) {
     jsonSchema.items = mapOpenApiSchemaToJsonSchema(
       jsonSchema.items as OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
     );
-    console.log({ items: jsonSchema.items })
   }
 
   return jsonSchema;

@@ -18,12 +18,31 @@ openapi-mcp-tool-generator -i <input-spec> -o <output-file>
 
 Options:
 - `-i, --input <file_or_url>`: Path or URL to the OpenAPI specification file (JSON or YAML)
+  - Local file path: `./swagger.json`, `/path/to/openapi.yaml`
+  - Remote URL: `https://petstore.swagger.io/v2/swagger.json`
 - `-o, --output <file>`: Path to the output TypeScript file (e.g., ./toolDefinitions.ts)
 - `--force`: Overwrite existing files without prompting
+- `--exclude-tags <tags>`: Comma-separated list of tags to exclude from the tool definitions
+- `--session-cookie <cookie>`: Session cookie value for authenticated API requests
+  - Alternative: Set the `AUGUST_SESSION_COOKIE` environment variable
 
-Example:
+Examples:
 ```bash
+# Basic usage with local file
 openapi-mcp-tool-generator -i ./swagger.json -o ./src/toolDefinitions.ts
+
+# Using a remote URL
+openapi-mcp-tool-generator -i https://petstore.swagger.io/v2/swagger.json -o ./src/toolDefinitions.ts
+
+# Using a remote URL with authentication
+openapi-mcp-tool-generator -i https://api.example.com/swagger.json -o ./src/toolDefinitions.ts --session-cookie "your-session-cookie-value"
+
+# Using environment variable for authentication
+export AUGUST_SESSION_COOKIE="your-session-cookie-value"
+openapi-mcp-tool-generator -i https://api.example.com/swagger.json -o ./src/toolDefinitions.ts
+
+# Exclude tools with specific tags
+openapi-mcp-tool-generator -i ./swagger.json -o ./src/toolDefinitions.ts --exclude-tags "internal,deprecated"
 ```
 
 ### Programmatic Usage
