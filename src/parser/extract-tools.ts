@@ -43,6 +43,9 @@ export function extractToolsFromApi(api: OpenAPIV3.Document): McpToolDefinition[
       }
       usedNames.add(finalToolName);
 
+      // Extract tags for use when filtering tools
+      const tags = operation.tags ?? [];
+
       // Get or create a description
       const description =
         operation.description || operation.summary || `Executes ${method.toUpperCase()} ${path}`;
@@ -70,6 +73,7 @@ export function extractToolsFromApi(api: OpenAPIV3.Document): McpToolDefinition[
         requestBodyContentType,
         securityRequirements,
         operationId: baseName,
+        tags,
       });
     }
   }
@@ -185,6 +189,13 @@ export function mapOpenApiSchemaToJsonSchema(
   delete (jsonSchema as any).readOnly;
   delete (jsonSchema as any).writeOnly;
 
+  // Sanitize schemas that include both `type: string, enum` and `properties, required`
+  if (schema.type === 'string' && schema.enum?.length) {
+    delete (jsonSchema as any).properties;
+    delete (jsonSchema as any).required;
+    console.log({ schema, jsonSchema })
+  }
+
   // Handle nullable properties by adding null to the type
   if (schema.nullable) {
     if (Array.isArray(jsonSchema.type)) {
@@ -197,7 +208,8 @@ export function mapOpenApiSchemaToJsonSchema(
   }
 
   // Recursively process object properties
-  if (jsonSchema.type === 'object' && jsonSchema.properties) {
+  // Don't care about type === 'object'...only the existence of properties
+  if (/* jsonSchema.type === 'object' && */ jsonSchema.properties) {
     const mappedProps: { [key: string]: JSONSchema7 | boolean } = {};
 
     for (const [key, propSchema] of Object.entries(jsonSchema.properties)) {
@@ -214,12 +226,14 @@ export function mapOpenApiSchemaToJsonSchema(
   // Recursively process array items
   if (
     jsonSchema.type === 'array' &&
-    typeof jsonSchema.items === 'object' &&
     jsonSchema.items !== null
   ) {
+    if (jsonSchema.items?.type === 'string')
+      console.log({ type: jsonSchema.type, items: jsonSchema.items })
     jsonSchema.items = mapOpenApiSchemaToJsonSchema(
       jsonSchema.items as OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
     );
+    console.log({ items: jsonSchema.items })
   }
 
   return jsonSchema;

@@ -9,7 +9,8 @@
         "node": ">=20.0.0"
     },
     "bin": {
-        "openapi-mcp-generator": "./dist/index.js"
+        "openapi-mcp-generator": "./dist/index.js",
+        "openapi-mcp-tool-generator": "./dist/gen-tool-defs.js"
     },
     "files": [
         "dist",
@@ -17,10 +18,9 @@
         "LICENSE"
     ],
     "scripts": {
-        "start": "node dist/index.js",
-        "clean": "rimraf dist",
-        "typecheck": "tsc --noEmit",
-        "build": "tsc && chmod 755 dist/index.js"
+        "start": "bun ./src/index.ts",
+        "check": "tsc --noEmit",
+        "gen-tool-defs": "bun ./src/gen-tool-defs.ts"
     },
     "keywords": [
         "openapi",

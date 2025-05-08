@@ -38,6 +38,7 @@ export interface CliOptions {
 export interface McpToolDefinition {
   /** Name of the tool, must be unique */
   name: string;
+
   /** Human-readable description of the tool */
   description: string;
   /** JSON Schema that defines the input parameters */
@@ -56,6 +57,8 @@ export interface McpToolDefinition {
   securityRequirements: OpenAPIV3.SecurityRequirementObject[];
   /** Original operation ID from the OpenAPI spec */
   operationId: string;
+  /** Original tags from the OpenAPI spec */
+  tags: string[];
 }
 
 /**
